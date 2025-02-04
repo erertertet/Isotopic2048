@@ -75,7 +75,7 @@ Grid.prototype.getUnstableTiles = function(grid) {
   this.eachCell(function (x, y, tile) {
     if (tile) {
       var tileContent = grid.cellContent(tile);
-      if (tileContent.unstable !== 0)
+      if (tileContent.unstable !== -1)
         cells.push(tileContent);
     }
   });

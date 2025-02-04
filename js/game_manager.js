@@ -62,7 +62,7 @@ GameManager.prototype.addRandomTile = function () {
     var value = Math.random() < 0.9 ? 2 : 4;
     var tile = new Tile(this.grid.randomAvailableCell(), value);
 
-    tile.unstable = 0;
+    tile.unstable = -1;
 
     this.grid.insertTile(tile);
   }
@@ -119,6 +119,28 @@ GameManager.prototype.move = function (direction) {
   // Save the current tile positions and remove merger information
   this.prepareTiles();
 
+  self.grid.getExplodingTiles(self.grid);
+
+  var unstableTiles = self.grid.getUnstableTiles(self.grid);
+    for (i = 0; i < unstableTiles.length; i++) {
+        var unstableTile = unstableTiles[i]
+        if (unstableTile.unstable === 0) {
+            unstableTile.unstable = "0";
+            unstableTile.explode = true;
+            exploded = true;
+        }
+        else {
+          unstableTile.unstable--;
+        }
+    }
+
+    if (exploded) {
+      var exploding = self.grid.getExplodingTiles(self.grid);
+      for (j = 0; j < exploding.length; j++) {
+          self.grid.removeTile(exploding[j]);
+      }
+    }
+
   // Traverse the grid in the right direction and move tiles
   traversals.x.forEach(function (x) {
     traversals.y.forEach(function (y) {
@@ -142,6 +164,10 @@ GameManager.prototype.move = function (direction) {
 
               // Update the score
               self.score += merged.value + (tile.unstable > 0 ? tile.unstable * 2 : 0) + (next.unstable > 0 ? next.unstable * 2 : 0);
+
+              if (merged.unstable === 0){
+                merged.unstable = -1
+              }
 
               self.grid.insertTile(merged);
               self.grid.removeTile(tile);
@@ -172,24 +198,6 @@ GameManager.prototype.move = function (direction) {
   });
 
   if (moved) {
-    var unstableTiles = self.grid.getUnstableTiles(self.grid);
-    for (i = 0; i < unstableTiles.length; i++) {
-        var unstableTile = unstableTiles[i]
-        if (unstableTile.unstable === 1) {
-            unstableTile.unstable = "0";
-            unstableTile.explode = true;
-            exploded = true;
-        }
-        else {
-          unstableTile.unstable--;
-        }
-    }
-    if (exploded) {
-      var exploding = self.grid.getExplodingTiles(self.grid);
-      for (j = 0; j < exploding.length; j++) {
-          self.grid.removeTile(exploding[j]);
-      }
-    }
 
     this.addRandomTile();
 

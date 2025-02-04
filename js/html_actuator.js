@@ -126,7 +126,7 @@ HTMLActuator.prototype.addTile = function (tile) {
   // We can't use classlist because it somehow glitches when replacing classes
   var classes = ["tile", "tile-" + tile.value, positionClass];
 
-  if (tile.unstable !== 0)
+  if (tile.unstable !== -1)
     classes.push("tile-unstable");
 
   if (tile.explode)
@@ -141,7 +141,7 @@ HTMLActuator.prototype.addTile = function (tile) {
 
 
   inner.classList.add("tile-inner");
-  inner.innerHTML = this.getElement(tile.value) + (tile.unstable || tile.unstable === "0" ? '<span class="count">' + tile.unstable + '</span>'  : '');
+  inner.innerHTML = this.getElement(tile.value) + (tile.unstable !== -1 ? '<span class="count">' + tile.unstable + '</span>'  : '');
 
   if (tile.previousPosition) {
     // Make sure that the tile gets rendered in the previous position first
